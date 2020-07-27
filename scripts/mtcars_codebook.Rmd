@@ -1,0 +1,95 @@
+---
+title: "`mtcars` Example Codebook"
+date: "2020/07/22 (last updated: `r Sys.Date()`)"
+output:
+  html_document:
+    toc: true
+    toc_depth: 4
+    toc_float: true
+    code_folding: 'hide'
+    self_contained: true
+  pdf_document:
+    toc: yes
+    toc_depth: 4
+    latex_engine: xelatex
+---
+
+Here, we're just setting a few options.
+
+```{r setup}
+knitr::opts_chunk$set(
+  warning = TRUE, # show warnings during codebook generation
+  message = TRUE, # show messages during codebook generation
+  error = TRUE, # do not interrupt codebook generation in case of errors,
+                # usually better for debugging
+  echo = TRUE  # show R code
+)
+ggplot2::theme_set(ggplot2::theme_bw())
+
+```
+
+## R Session Info
+
+```{r r_session_info}
+sessionInfo()
+```
+
+Now, we're preparing our data for the codebook.
+
+```{r prepare_codebook}
+library(codebook)
+codebook_data <- mtcars
+
+# omit the following lines, if your missing values are already properly labelled
+codebook_data <- detect_missing(codebook_data,
+    only_labelled = TRUE, # only labelled values are autodetected as
+                                   # missing
+    negative_values_are_missing = FALSE, # negative values are missing values
+    ninety_nine_problems = TRUE,   # 99/999 are missing values, if they
+                                   # are more than 5 MAD from the median
+    )
+```
+
+```{r edit_var_descriptions}
+# add variable descriptions
+var_label(codebook_data) <- list(
+  mpg = "Miles/(US) gallon.",
+  cyl = "Number of cylinders.",
+  disp = "Displacement (cu.in.).",
+  hp = "Gross horsepower.",
+  drat = "Rear axle ratio.",
+  wt = "Weight (1000 lbs).",
+  qsec = "1/4 mile time.",
+  vs = "Engine shape.",
+  am = "Transmission type.",
+  gear = "Number of forward gears.",
+  carb = "Number of carburetors."
+)
+```
+
+```{r add_variable_labels}
+val_labels(codebook_data$vs) <- c("V-shaped" = 0, "straight" = 1)
+val_labels(codebook_data$am) <- c("automatic" = 0, "manual" = 1)
+```
+
+```{r add_meta_data}
+# Name of the dataset
+metadata(codebook_data)$name <- "`mtcars` example dataset from the datasets package"
+
+# description of the dataset
+metadata(codebook_data)$description <- "The data was extracted from the 1974 Motor Trend US magazine, and comprises fuel consumption and 10 aspects of automobile design and performance for 32 automobiles (1973–74 models)."
+
+# when was the data collected: ideally in ISO 8601 format
+metadata(codebook_data)$temporalCoverage <- "1973/1974"
+
+metadata(codebook_data)$citation <- "Henderson and Velleman (1981), Building multiple regression models interactively. Biometrics, 37, 391–411."
+```
+
+You can find other useful pieces of metadata which might help other make use of your data in the future at https://schema.org/Dataset
+
+
+Create codebook
+
+```{r codebook}
+codebook(codebook_data)
+```
