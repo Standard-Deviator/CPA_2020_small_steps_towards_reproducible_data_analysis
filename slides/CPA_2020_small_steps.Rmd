@@ -14,6 +14,7 @@ output:
       countIncrementalSlides: false
       titleSlideClass: ["middle","center","inverse"]
 ---
+<link href="/extra.css" rel="stylesheet" type="text/css">
 class: inverse, center
 
 background-image: url(../slides/images/small_steps_towards_reproducible_data_analyses_splash_slide.png)
